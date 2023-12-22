@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+    	body{
+    		background-color: black;
+    		color: white;
+    		font-size:28px;
+		font-style: italic;
+    	}
+    	.main-heading{
+    		display: flex;
+    		flex-direction: row;
+    		justify-content: center;
+		color: cyan;
+	
+    	}
+    	p{
+    		border-radius: 0px;
+    		margin-left: 10%;
+    		margin-right: 10%;
+    		margin-top: 5%;
+    		margin-bottom: 5%;
+    		text-align:center;
+    		color: yellow;
+    	}
+    	h4{
+    		border-radius: 0px;
+    		color: yellow;
+    	}
+    	
+    	.details{
+    		text-align: left;
+    		margin: 0px;
+    		padding-left: 15%;
+    	}
+    	h3{
+    		text-decoration: underline;
+    	}
+    	
+    </style>
+    <title>Audio Steganography Tool</title>
+</head>
+<body>
+    
+    <h1 class = "main-heading">Audio Steganography Tool</h1>
+    <p> Audio steganography is a technique for hiding secret messages within audio files. This can be useful for securely transmitting sensitive information or for embedding copyright information within audio content. AES-256 is a strong encryption algorithm that can be used to protect the hidden message from unauthorized access. AES-256 uses a 256-bit key to encrypt and decrypt data. This makes it very difficult for attackers to break the encryption and recover the hidden message.</p>
+    <form id="encryptForm">
+        <label for="inputAudio">Input Audio File:</label>
+        <input type="file" name="inputAudio" id="inputAudio" accept=".wav">
+
+        <label for="fileToHide">File to Hide:</label>
+        <input type="file" name="fileToHide" id="fileToHide">
+
+        <label for="passwordEncrypt">Encryption Password:</label>
+        <input type="password" name="passwordEncrypt" id="passwordEncrypt">
+
+        <label for="emailID">Email Id:</label>
+        <input type="email" name="emailID" id="emailID">
+
+        <button type="button" onclick="encrypt()">Encrypt</button>
+    </form>
+
+    <hr>
+
+    <form id="decryptForm">
+        <label for="inputAudioDecrypt">Input Audio File:</label>
+        <input type="file" name="inputAudioDecrypt" id="inputAudioDecrypt" accept=".wav">
+
+        <label for="encryptedFile">Encrypted File:</label>
+        <input type="file" name="encryptedFile" id="encryptedFile">
+
+        <label for="passwordDecrypt">Decryption Password:</label>
+        <input type="password" name="passwordDecrypt" id="passwordDecrypt">
+
+        <label for="emailID">Email Id:</label>
+        <input type="email" name="emailID" id="emailID">
+
+        <button type="button" onclick="decrypt()">Decrypt</button>
+    </form>
+
+    <div id="outputMessage"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.2/socket.io.js"></script>
+    <script>
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        function encrypt() {
+            var inputAudio = document.getElementById('inputAudio').files[0];
+            var fileToHide = document.getElementById('fileToHide').files[0];
+            var passwordEncrypt = document.getElementById('passwordEncrypt').value;
+            var emailID = document.getElementById('emailID').value;
+
+            var formData = new FormData();
+            formData.append('input_audio', inputAudio);
+            formData.append('file_to_hide', fileToHide);
+            formData.append('password', passwordEncrypt);
+            formData.append('emailID', emailID);
+
+            socket.emit('encrypt', {
+                'input_audio': inputAudio.name,
+                'file_to_hide': fileToHide.name,
+                'password': passwordEncrypt,
+                'emailID': emailID
+            });
+
+            document.getElementById('inputAudio').value = '';
+            document.getElementById('fileToHide').value = '';
+            document.getElementById('passwordEncrypt').value = '';
+        }
+
+        function decrypt() {
+            var inputAudioDecrypt = document.getElementById('inputAudioDecrypt').files[0];
+            var encryptedFile = document.getElementById('encryptedFile').files[0];
+            var passwordDecrypt = document.getElementById('passwordDecrypt').value;
+            var emailID = document.getElementById('emailID').value;
+
+            var formData = new FormData();
+            formData.append('input_audio', inputAudioDecrypt);
+            formData.append('encrypted_file', encryptedFile);
+            formData.append('password', passwordDecrypt);
+            formData.append('emailID', emailID);
+
+            socket.emit('decrypt', {
+                'input_audio': inputAudioDecrypt.name,
+                'encrypted_file': encryptedFile.name,
+                'password': passwordDecrypt,
+                'emailID': emailID
+            });
+
+            document.getElementById('inputAudioDecrypt').value = '';
+            document.getElementById('encryptedFile').value = '';
+            document.getElementById('passwordDecrypt').value = '';
+        }
+
+        socket.on('output', function(msg) {
+            document.getElementById('outputMessage').innerHTML = msg.message;
+        });
+    </script>
+    <br><br><br><br><br>
+    	<h3>Benefits of using AES-256 encryption in audio steganography</h3>
+    	<p>AES-256 is a very strong encryption algorithm that is difficult to break. This helps to protect the hidden message from unauthorized access.AES-256 encryption helps to ensure the integrity of the hidden message. This means that the message will not be tampered with during transmission or storage. AES-256 encryption helps to conceal the presence of the hidden message. This makes it more difficult for attackers to detect the hidden message.</p>
+	
+</body>
+</html>
+

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+    	body{
+    		background-color: black;
+    		color: white;
+    		font-size:28px;
+		font-style: italic;
+    	}
+    	h1{
+    		display: flex;
+    		flex-direction: row;
+    		justify-content: center;
+		color: cyan;
+		font-size: 42px;
+    	}
+    	p{
+    		border-radius: 0px;
+    		margin-left: 20%;
+    		margin-right: 20%;
+    		margin-top: 5%;
+    		margin-bottom: 5%;
+    		text-align:center;
+    		color: yellow;
+    	}
+    </style>
+    <title>Audio Steganography Tool</title>
+</head>
+<body>
+    <h1>Audio Steganography Tool</h1>
+    <p> The "Audio Steganography Tool" is a Bash script designed to provide users with the ability to perform audio steganography and encryption/decryption of hidden data within audio files. This tool allows users to secure their sensitive information within audio files using strong encryption techniques and then retrieve it when needed".</p>
+    <form id="encryptForm">
+        <label for="inputAudio">Input Audio File:</label>
+        <input type="file" name="inputAudio" id="inputAudio" accept=".wav">
+
+        <label for="fileToHide">File to Hide:</label>
+        <input type="file" name="fileToHide" id="fileToHide">
+
+        <label for="passwordEncrypt">Encryption Password:</label>
+        <input type="password" name="passwordEncrypt" id="passwordEncrypt">
+
+        <button type="button" onclick="encrypt()">Encrypt</button>
+    </form>
+
+    <hr>
+
+    <form id="decryptForm">
+        <label for="inputAudioDecrypt">Input Audio File:</label>
+        <input type="file" name="inputAudioDecrypt" id="inputAudioDecrypt" accept=".wav">
+
+        <label for="encryptedFile">Encrypted File:</label>
+        <input type="file" name="encryptedFile" id="encryptedFile">
+
+        <label for="passwordDecrypt">Decryption Password:</label>
+        <input type="password" name="passwordDecrypt" id="passwordDecrypt">
+
+        <button type="button" onclick="decrypt()">Decrypt</button>
+    </form>
+
+    <div id="outputMessage"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.2/socket.io.js"></script>
+    <script>
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        function encrypt() {
+            var inputAudio = document.getElementById('inputAudio').files[0];
+            var fileToHide = document.getElementById('fileToHide').files[0];
+            var passwordEncrypt = document.getElementById('passwordEncrypt').value;
+
+            var formData = new FormData();
+            formData.append('input_audio', inputAudio);
+            formData.append('file_to_hide', fileToHide);
+            formData.append('password', passwordEncrypt);
+
+            socket.emit('encrypt', {
+                'input_audio': inputAudio.name,
+                'file_to_hide': fileToHide.name,
+                'password': passwordEncrypt
+            });
+
+            document.getElementById('inputAudio').value = '';
+            document.getElementById('fileToHide').value = '';
+            document.getElementById('passwordEncrypt').value = '';
+        }
+
+        function decrypt() {
+            var inputAudioDecrypt = document.getElementById('inputAudioDecrypt').files[0];
+            var encryptedFile = document.getElementById('encryptedFile').files[0];
+            var passwordDecrypt = document.getElementById('passwordDecrypt').value;
+
+            var formData = new FormData();
+            formData.append('input_audio', inputAudioDecrypt);
+            formData.append('encrypted_file', encryptedFile);
+            formData.append('password', passwordDecrypt);
+
+            socket.emit('decrypt', {
+                'input_audio': inputAudioDecrypt.name,
+                'encrypted_file': encryptedFile.name,
+                'password': passwordDecrypt
+            });
+
+            document.getElementById('inputAudioDecrypt').value = '';
+            document.getElementById('encryptedFile').value = '';
+            document.getElementById('passwordDecrypt').value = '';
+        }
+
+        socket.on('output', function(msg) {
+            document.getElementById('outputMessage').innerHTML = msg.message;
+        });
+    </script>
+</body>
+</html>
+
